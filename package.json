@@ -1,0 +1,8 @@
+{
+  "name": "react-dragbox",
+  "version": "1.0.0",
+  "description": "react-drag-box提供了一个可拖拽的容器",
+  "main": "index.js",
+  "keywords": ["react-dragbox"],
+  "author": "mtshen"
+}

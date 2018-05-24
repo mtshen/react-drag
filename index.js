@@ -13,7 +13,7 @@
  */
 
 import React, { Component } from 'react';
-import './dragBox.css';
+import './style.css';
 
 class DragBox extends Component {
     constructor() {
