@@ -6,6 +6,9 @@
  *                          如果你希望拖拽的时候是你设定的样式, 可以设置一个回调函数, 在回调函数内返回一个元素即为可拖拽元素
  * dragstart: function      开始拖拽, 单纯的点击事件不会触发dragstart, 触发条件: 位置偏移超过了 20px
  * dragend: function        拖拽结束的回调函数
+ * dragto: function         与拖拽结束类似, 但是只有在拖入某个元素后才会触发
+ * dragout: function        拖拽出限定区域
+ * outClass: className      拖拽限定区域
  * dragClass: className     拖拽到该元素中可以触发dragEnd
  */
 
@@ -77,23 +80,34 @@ class DragBox extends Component {
         // 如果进行了拖拽, 则销毁拖拽元素
         if (this.isStart) {
             // 如果没有设置dragClass 则不触发运算
-            const {dragClass} = this.props;
-            let dragElementList = [];
+            const {dragClass, outClass, dragend, dragto, dragout} = this.props;
+            let dragElementList = [], outElementList = [];
             if (dragClass) {
-                dragElementList = this.getDragElementList(this.dragElement, this.props.dragClass);
+                dragElementList = this.getDragElementList(this.dragElement, dragClass);
             }
-            
-            document.body.removeChild(this.dragElement);
-            document.body.classList.remove('react-drop-noselect');
-            this.dragElement = null;
-            this.isStart = false;
 
             // 触发拖拽结束事件
-            const dragend = this.props.dragend;
             if (typeof dragend === 'function') {
                 dragend(event, dragElementList);
             }
 
+            // 触发拖拽进入事件
+            if (dragElementList.length && typeof dragto === 'function') {
+                dragto(event, dragElementList);
+            }
+
+            // 触发拖出事件
+            if (outClass && typeof dragout === 'function') {
+                outElementList = this.getDragElementList(this.dragElement, outClass);
+                if (!outElementList.length) {
+                    dragout(event, document.querySelectorAll(outClass));
+                }
+            }
+
+            document.body.removeChild(this.dragElement);
+            document.body.classList.remove('react-drop-noselect');
+            this.dragElement = null;
+            this.isStart = false;
         }
     }
 
